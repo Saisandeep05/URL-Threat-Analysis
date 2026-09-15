@@ -282,19 +282,23 @@ class AnalyzeRequest(BaseModel):
     url: Optional[str] = ""
 
 @app.get("/")
-@app.get("/api")
-@app.get("/api/")
-@app.get("/api/index.py")
 def root():
     index_file = os.path.join(PUBLIC_DIR, "index.html")
     if os.path.isfile(index_file):
         return FileResponse(index_file)
-    return {"status": "ok", "message": "Explainable URL Security API is running."}
+    return {
+        "status": "healthy",
+        "has_api_key": bool(os.environ.get("VIRUSTOTAL_API_KEY")),
+        "message": "Explainable URL Security API is running."
+    }
 
 @app.api_route("/api/health", methods=["GET", "HEAD"])
 @app.api_route("/api/health/", methods=["GET", "HEAD"])
 @app.api_route("/health", methods=["GET", "HEAD"])
 @app.api_route("/health/", methods=["GET", "HEAD"])
+@app.api_route("/api", methods=["GET", "HEAD"])
+@app.api_route("/api/", methods=["GET", "HEAD"])
+@app.api_route("/api/index.py", methods=["GET", "HEAD"])
 def health():
     has_key = bool(os.environ.get("VIRUSTOTAL_API_KEY"))
     return {
@@ -308,10 +312,13 @@ def health():
 @app.post("/analyze")
 @app.post("/analyze/")
 @app.post("/api/index.py")
+@app.post("/api")
+@app.post("/api/")
 def api_analyze_url(request: AnalyzeRequest, req: Request):
     raw_url = (request.url or "").strip()
     if not raw_url:
         raise HTTPException(status_code=400, detail="URL cannot be empty")
+
 
     
     # Auto-prepend http if scheme is omitted

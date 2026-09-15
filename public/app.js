@@ -196,14 +196,14 @@ async function checkApiHealth() {
   try {
     let res = await fetch('/api/health');
     if (!res.ok) {
-      res = await fetch('/health');
+      res = await fetch('/api');
     }
     const data = await res.json();
-    if (data.status === 'healthy') {
+    if (data.status === 'healthy' || data.status === 'ok') {
       elements.statusDot.className = 'status-dot online';
       elements.statusText.textContent = data.has_api_key ? 'API Connected' : 'Missing API Key';
     } else {
-      throw new Error(data.message);
+      throw new Error(data.message || 'Offline');
     }
   } catch (err) {
     elements.statusDot.className = 'status-dot offline';
@@ -229,9 +229,9 @@ async function runAnalysis(rawUrl) {
       body: JSON.stringify({ url: rawUrl })
     });
 
-    // If 404 or 405 from router, fallback to /analyze directly
+    // If 404 or 405 from router, fallback to /api directly
     if (response.status === 404 || response.status === 405) {
-      response = await fetch('/analyze', {
+      response = await fetch('/api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -241,6 +241,7 @@ async function runAnalysis(rawUrl) {
     }
 
     const data = await response.json();
+
 
     if (!response.ok) {
       throw new Error(data.detail || 'Analysis request failed from server');
