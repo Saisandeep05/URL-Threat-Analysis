@@ -1,4 +1,4 @@
-# SentinelXAI — Explainable URL Threat Intelligence Dashboard
+# Phishing URL Detector — Explainable URL Threat Intelligence Dashboard
 
 A modern, fast, and explainable URL threat detection platform powered by **VirusTotal API v3**, **Explainable AI (XAI)** heuristic analysis, and a sleek cyberpunk cybersecurity dashboard.
 
@@ -44,7 +44,7 @@ r3/
    ```bash
    git init
    git add .
-   git commit -m "Initial commit: SentinelXAI dashboard"
+   git commit -m "Initial commit: Phishing URL Detector dashboard"
    git branch -M main
    ```
 2. Create a new repository on your GitHub account.

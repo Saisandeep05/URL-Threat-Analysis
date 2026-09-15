@@ -1,5 +1,5 @@
 /**
- * SentinelXAI - Explainable URL Threat Intelligence Dashboard
+ * Phishing URL Detector - Explainable URL Threat Intelligence Dashboard
  * Handles URL analysis, localStorage history ("Keep the link"), and dynamic UI updates.
  */
 
@@ -10,7 +10,7 @@ const STATE = {
   isScanning: false
 };
 
-const STORAGE_KEY = 'sentinel_scan_ledger_v1';
+const STORAGE_KEY = 'phishing_url_detector_scan_ledger_v1';
 
 // DOM Elements
 const elements = {
@@ -236,15 +236,13 @@ async function checkApiHealth() {
     const data = await res.json();
     if (data.status === 'healthy' || data.status === 'ok') {
       elements.statusDot.className = 'status-dot online';
-      if (elements.statusText) elements.statusText.textContent = '';
-      if (elements.apiStatusPill) elements.apiStatusPill.title = 'Online';
+      if (elements.apiStatusPill) elements.apiStatusPill.removeAttribute('title');
     } else {
       throw new Error(data.message || 'Offline');
     }
   } catch (err) {
     elements.statusDot.className = 'status-dot offline';
-    if (elements.statusText) elements.statusText.textContent = '';
-    if (elements.apiStatusPill) elements.apiStatusPill.title = 'Offline';
+    if (elements.apiStatusPill) elements.apiStatusPill.removeAttribute('title');
   }
 }
 
