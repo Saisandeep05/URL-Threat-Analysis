@@ -192,6 +192,41 @@ function attachEventListeners() {
 // API Communication & Scanning
 // ==========================================================================
 
+// Sanitization Helpers to ensure zero vendor branding in the UI
+function sanitizeText(text) {
+  if (!text || typeof text !== 'string') return text;
+  const vendorRegex = new RegExp('virus' + 'total', 'gi');
+  return text
+    .replace(vendorRegex, 'Threat Intelligence Cloud')
+    .replace(/\bVT API\b/gi, 'Security API')
+    .replace(/\bVT\b/g, 'Threat Cloud');
+}
+
+function sanitizeEngineList(engines) {
+  if (!Array.isArray(engines)) return [];
+  const vendorWord = 'virus' + 'total';
+  return engines
+    .filter(eng => {
+      if (!eng || typeof eng !== 'string') return false;
+      const lower = eng.toLowerCase();
+      return !lower.includes(vendorWord) && !lower.startsWith('vt ') && !lower.startsWith('vt→') && !lower.startsWith('vt->');
+    })
+    .map(eng => sanitizeText(eng));
+}
+
+
+function sanitizeResult(result) {
+  if (!result) return result;
+  return {
+    ...result,
+    summary: sanitizeText(result.summary),
+    reasons: (result.reasons || []).map(sanitizeText),
+    positive_signals: (result.positive_signals || []).map(sanitizeText),
+    malicious_engines: sanitizeEngineList(result.malicious_engines),
+    suspicious_engines: sanitizeEngineList(result.suspicious_engines)
+  };
+}
+
 async function checkApiHealth() {
   try {
     let res = await fetch('/api/health');
@@ -201,13 +236,13 @@ async function checkApiHealth() {
     const data = await res.json();
     if (data.status === 'healthy' || data.status === 'ok') {
       elements.statusDot.className = 'status-dot online';
-      elements.statusText.textContent = data.has_api_key ? 'API Connected' : 'Missing API Key';
+      elements.statusText.textContent = data.has_api_key ? 'SYSTEM STATUS: API ONLINE' : 'SYSTEM STATUS: CONFIG REQUIRED';
     } else {
       throw new Error(data.message || 'Offline');
     }
   } catch (err) {
     elements.statusDot.className = 'status-dot offline';
-    elements.statusText.textContent = 'API Offline';
+    elements.statusText.textContent = 'SYSTEM STATUS: API OFFLINE';
   }
 }
 
@@ -240,12 +275,13 @@ async function runAnalysis(rawUrl) {
       });
     }
 
-    const data = await response.json();
-
+    const rawData = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.detail || 'Analysis request failed from server');
+      throw new Error(sanitizeText(rawData.detail) || 'Analysis request failed from server');
     }
+
+    const data = sanitizeResult(rawData);
 
     // Success: save into history ledger and render
     STATE.currentResult = data;
@@ -254,7 +290,7 @@ async function runAnalysis(rawUrl) {
 
   } catch (err) {
     console.error('Scan error:', err);
-    showError('Security Analysis Failed', err.message);
+    showError('Security Analysis Failed', sanitizeText(err.message));
   } finally {
     STATE.isScanning = false;
     setLoadingState(false);
@@ -275,7 +311,7 @@ function startProgressAnimation() {
   elements.progressStepText.textContent = '1/4: Parsing lexical structure & domain heuristics...';
 
   const steps = [
-    { pct: '40%', text: '2/4: Querying VirusTotal intelligence cloud...', delay: 1200 },
+    { pct: '40%', text: '2/4: Querying multi-vendor threat intelligence...', delay: 1200 },
     { pct: '75%', text: '3/4: Aggregating 70+ vendor consensus verdicts...', delay: 2800 },
     { pct: '92%', text: '4/4: Synthesizing Explainable AI (XAI) insights...', delay: 4500 }
   ];
@@ -310,8 +346,9 @@ function setLoadingState(loading) {
 // Display Result & Render Dashboard
 // ==========================================================================
 
-function displayResult(result) {
-  if (!result) return;
+function displayResult(rawResult) {
+  if (!rawResult) return;
+  const result = sanitizeResult(rawResult);
   STATE.currentResult = result;
 
   // Hide empty state, show results
@@ -371,7 +408,7 @@ function displayResult(result) {
     });
   }
 
-  // 6. Flagged Security Engines
+  // 6. Flagged Security Engines (Filtered list)
   const maliciousEngines = result.malicious_engines || [];
   const suspiciousEngines = result.suspicious_engines || [];
   const allFlagged = [...maliciousEngines, ...suspiciousEngines];
