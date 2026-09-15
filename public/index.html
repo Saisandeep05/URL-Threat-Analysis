@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelXAI | Explainable URL Threat Intelligence</title>
+  <meta name="description" content="Real-time URL Threat Intelligence with Explainable AI (XAI) and multi-engine VirusTotal consensus.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="logo-shield">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">SENTINEL<span class="accent-text">XAI</span></span>
+          <span class="brand-tag">Explainable Security Intelligence</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="api-status-pill" id="apiStatusPill">
+          <span class="status-dot"></span>
+          <span class="status-text" id="statusText">Checking API...</span>
+        </div>
+        <button class="btn-icon" id="toggleHistoryBtn" title="Saved Links & History">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="history-badge" id="historyCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="main-layout">
+    <!-- Center Scanner & Results Section -->
+    <section class="scanner-section">
+      <div class="scanner-container">
+        <!-- Hero Header -->
+        <div class="hero-headline">
+          <h1 class="headline-title">Explainable URL Threat Analysis</h1>
+          <p class="headline-subtitle">
+            Inspect suspicious links with multi-engine consensus and transparent explainable AI reasoning.
+          </p>
+        </div>
+
+        <!-- URL Input Card -->
+        <div class="card search-card">
+          <form id="analyzeForm" class="search-form">
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+              </span>
+              <input 
+                type="text" 
+                id="urlInput" 
+                placeholder="Enter or paste any URL (e.g. https://suspicious-domain.com/login)..." 
+                autocomplete="off" 
+                spellcheck="false"
+                required
+              />
+              <button type="button" class="btn-clear" id="clearInputBtn" title="Clear input" style="display: none;">
+                ✕
+              </button>
+            </div>
+            <button type="submit" class="btn-primary" id="analyzeBtn">
+              <span class="btn-text">Analyze Link</span>
+              <span class="btn-loader" style="display: none;"></span>
+            </button>
+          </form>
+
+          <!-- Quick presets for demonstration -->
+          <div class="quick-examples">
+            <span class="quick-label">Try test samples:</span>
+            <button class="quick-tag" data-url="https://google.com">Google (Safe)</button>
+            <button class="quick-tag" data-url="https://github.com">GitHub (Safe)</button>
+            <button class="quick-tag" data-url="http://192.168.1.1:8080/bank-update/verify">IP Phishing Pattern</button>
+            <button class="quick-tag" data-url="http://secure-login-account-verify.xyz@attacker.com/signin">Obfuscated @ URL</button>
+          </div>
+        </div>
+
+        <!-- Analysis Progress Overlay/Bar -->
+        <div class="analysis-progress-card" id="analysisProgress" style="display: none;">
+          <div class="progress-bar-container">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-meta">
+            <span class="progress-step-text" id="progressStepText">Initializing scan pipeline...</span>
+            <span class="progress-pct" id="progressPct">15%</span>
+          </div>
+        </div>
+
+        <!-- Empty State / Welcome Guide -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon-shield">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <h3>Ready for URL Inspection</h3>
+          <p>Paste a web link above to trigger deep structural inspection, multi-vendor threat scanning, and neural XAI explainability.</p>
+          <div class="feature-bullets">
+            <div class="bullet-item">
+              <span class="bullet-check">✓</span> 70+ Security Vendor Consensuses
+            </div>
+            <div class="bullet-item">
+              <span class="bullet-check">✓</span> Transparent Reasoning & Risk Factor Breakdown
+            </div>
+            <div class="bullet-item">
+              <span class="bullet-check">✓</span> Persistent Local History (Keep & Revisit Links)
+            </div>
+          </div>
+        </div>
+
+        <!-- Error State Display -->
+        <div class="alert-banner error" id="errorAlert" style="display: none;">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <strong id="errorTitle">Analysis Failed</strong>
+            <p id="errorMessage">Something went wrong while connecting to the security engine.</p>
+          </div>
+          <button class="alert-close" id="closeErrorBtn">✕</button>
+        </div>
+
+        <!-- Results Display Container -->
+        <div class="results-dashboard" id="resultsDashboard" style="display: none;">
+          <!-- Top Verdict Header Card -->
+          <div class="card verdict-card" id="verdictCard">
+            <div class="verdict-primary">
+              <div class="verdict-badge-row">
+                <span class="verdict-tag" id="verdictBadge">ANALYZING</span>
+                <span class="scan-time" id="scanTimestamp">Scanned Just Now</span>
+              </div>
+              <h2 class="scanned-url" id="displayUrl" title="Click to copy">https://...</h2>
+              <p class="xai-summary-text" id="xaiSummary">
+                Loading explainable security overview...
+              </p>
+            </div>
+
+            <!-- Risk Gauge -->
+            <div class="gauge-container">
+              <div class="radial-gauge">
+                <svg class="gauge-svg" width="130" height="130" viewBox="0 0 120 120">
+                  <circle class="gauge-bg" cx="60" cy="60" r="50" stroke-width="10"/>
+                  <circle class="gauge-meter" id="gaugeMeter" cx="60" cy="60" r="50" stroke-width="10"/>
+                </svg>
+                <div class="gauge-value-box">
+                  <span class="gauge-num" id="gaugeNumber">0%</span>
+                  <span class="gauge-label">RISK SCORE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Toolbar for Scanned Link -->
+          <div class="link-actions-toolbar">
+            <button class="toolbar-btn" id="saveLinkBtn" title="Save this link in history">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span>Bookmark Link</span>
+            </button>
+            <button class="toolbar-btn" id="copyJsonBtn" title="Copy raw JSON result">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy Report JSON</span>
+            </button>
+            <button class="toolbar-btn" id="rescanBtn" title="Perform a fresh analysis">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span>Re-analyze</span>
+            </button>
+          </div>
+
+          <!-- Vendor Consensus Matrix -->
+          <div class="consensus-grid">
+            <div class="metric-card stat-malicious">
+              <div class="metric-head">
+                <span class="metric-dot dot-red"></span>
+                <span>Malicious</span>
+              </div>
+              <div class="metric-val" id="statMalicious">0</div>
+            </div>
+            <div class="metric-card stat-suspicious">
+              <div class="metric-head">
+                <span class="metric-dot dot-amber"></span>
+                <span>Suspicious</span>
+              </div>
+              <div class="metric-val" id="statSuspicious">0</div>
+            </div>
+            <div class="metric-card stat-harmless">
+              <div class="metric-head">
+                <span class="metric-dot dot-green"></span>
+                <span>Harmless</span>
+              </div>
+              <div class="metric-val" id="statHarmless">0</div>
+            </div>
+            <div class="metric-card stat-undetected">
+              <div class="metric-head">
+                <span class="metric-dot dot-gray"></span>
+                <span>Undetected</span>
+              </div>
+              <div class="metric-val" id="statUndetected">0</div>
+            </div>
+            <div class="metric-card stat-total">
+              <div class="metric-head">
+                <span class="metric-dot dot-blue"></span>
+                <span>Total Engines</span>
+              </div>
+              <div class="metric-val" id="statTotal">0</div>
+            </div>
+          </div>
+
+          <!-- Two-column Detailed Evidence Breakdown -->
+          <div class="evidence-grid">
+            <!-- Left: XAI Explainability Reasons -->
+            <div class="card evidence-card">
+              <div class="card-header">
+                <span class="header-icon red-icon">⚠️</span>
+                <h3>Explainable Risk Factors</h3>
+              </div>
+              <ul class="reasons-list" id="reasonsList">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+
+            <!-- Right: Positive & Safe Signals -->
+            <div class="card evidence-card">
+              <div class="card-header">
+                <span class="header-icon green-icon">🛡️</span>
+                <h3>Legitimacy & Safe Signals</h3>
+              </div>
+              <ul class="signals-list" id="positiveSignalsList">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Flagged Security Engines List -->
+          <div class="card flagged-engines-card" id="flaggedEnginesSection" style="display: none;">
+            <div class="card-header">
+              <span class="header-icon red-icon">🚨</span>
+              <h3>Flagged Security Engines</h3>
+            </div>
+            <div class="engines-badge-grid" id="flaggedEnginesList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Structural URL Anatomy Inspector -->
+          <div class="card anatomy-card">
+            <div class="card-header">
+              <span class="header-icon cyan-icon">🔬</span>
+              <h3>URL Structural Feature Inspection</h3>
+            </div>
+            <div class="anatomy-grid" id="anatomyGrid">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side Drawer: Saved Links & Scan History ("Keep the link") -->
+    <aside class="history-sidebar" id="historySidebar">
+      <div class="history-header">
+        <div class="history-title-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <h3>Saved Links Ledger</h3>
+        </div>
+        <button class="btn-text-sm" id="clearAllHistoryBtn">Clear All</button>
+      </div>
+
+      <div class="history-search-box">
+        <input type="text" id="historySearchInput" placeholder="Filter saved links..." spellcheck="false" />
+      </div>
+
+      <div class="history-list" id="historyList">
+        <!-- Dynamically rendered history items -->
+      </div>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
