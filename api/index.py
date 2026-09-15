@@ -274,10 +274,25 @@ def generate_xai(url, report):
 # API ENDPOINTS
 # ============================================================
 
-class AnalyzeRequest(BaseModel):
-    url: str
+from typing import Optional
 
-@app.get("/api/health")
+class AnalyzeRequest(BaseModel):
+    url: Optional[str] = ""
+
+@app.get("/")
+@app.get("/api")
+@app.get("/api/")
+@app.get("/api/index.py")
+def root():
+    index_file = os.path.join(PUBLIC_DIR, "index.html")
+    if os.path.isfile(index_file):
+        return FileResponse(index_file)
+    return {"status": "ok", "message": "Explainable URL Security API is running."}
+
+@app.api_route("/api/health", methods=["GET", "HEAD"])
+@app.api_route("/api/health/", methods=["GET", "HEAD"])
+@app.api_route("/health", methods=["GET", "HEAD"])
+@app.api_route("/health/", methods=["GET", "HEAD"])
 def health():
     has_key = bool(os.environ.get("VIRUSTOTAL_API_KEY"))
     return {
@@ -287,10 +302,15 @@ def health():
     }
 
 @app.post("/api/analyze")
+@app.post("/api/analyze/")
+@app.post("/analyze")
+@app.post("/analyze/")
+@app.post("/api/index.py")
 def api_analyze_url(request: AnalyzeRequest, req: Request):
-    raw_url = request.url.strip()
+    raw_url = (request.url or "").strip()
     if not raw_url:
         raise HTTPException(status_code=400, detail="URL cannot be empty")
+
     
     # Auto-prepend http if scheme is omitted
     if not raw_url.startswith("http://") and not raw_url.startswith("https://"):
@@ -324,15 +344,3 @@ def api_analyze_url(request: AnalyzeRequest, req: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Fallback static handler for local development
-@app.get("/{full_path:path}")
-def serve_static(full_path: str):
-    if not full_path or full_path == "":
-        full_path = "index.html"
-    file_path = os.path.join(PUBLIC_DIR, full_path)
-    if os.path.isfile(file_path):
-        return FileResponse(file_path)
-    index_file = os.path.join(PUBLIC_DIR, "index.html")
-    if os.path.isfile(index_file):
-        return FileResponse(index_file)
-    return {"message": "Explainable URL Security API"}

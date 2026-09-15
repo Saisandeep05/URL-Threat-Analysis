@@ -194,11 +194,14 @@ function attachEventListeners() {
 
 async function checkApiHealth() {
   try {
-    const res = await fetch('/api/health');
+    let res = await fetch('/api/health');
+    if (!res.ok) {
+      res = await fetch('/health');
+    }
     const data = await res.json();
     if (data.status === 'healthy') {
       elements.statusDot.className = 'status-dot online';
-      elements.statusText.textContent = data.has_api_key ? 'API Connected' : 'Demo Mode (No API Key)';
+      elements.statusText.textContent = data.has_api_key ? 'API Connected' : 'Missing API Key';
     } else {
       throw new Error(data.message);
     }
@@ -218,13 +221,24 @@ async function runAnalysis(rawUrl) {
   startProgressAnimation();
 
   try {
-    const response = await fetch('/api/analyze', {
+    let response = await fetch('/api/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ url: rawUrl })
     });
+
+    // If 404 or 405 from router, fallback to /analyze directly
+    if (response.status === 404 || response.status === 405) {
+      response = await fetch('/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url: rawUrl })
+      });
+    }
 
     const data = await response.json();
 
