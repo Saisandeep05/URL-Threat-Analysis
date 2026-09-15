@@ -36,16 +36,18 @@ app.add_middleware(
 )
 
 def get_headers(custom_key: str = None):
+    # Strictly read from environment variable to keep your key completely secret
     api_key = custom_key or os.environ.get("VIRUSTOTAL_API_KEY")
     if not api_key:
         raise HTTPException(
             status_code=500,
-            detail="VIRUSTOTAL_API_KEY is not configured in Environment Variables. Please add it to your Vercel settings or .env file."
+            detail="VIRUSTOTAL_API_KEY is not configured in Environment Variables. Please add it to your Vercel Project Settings."
         )
     return {
         "x-apikey": api_key,
         "accept": "application/json"
     }
+
 
 # ============================================================
 # HELPER: BASIC URL FEATURES
