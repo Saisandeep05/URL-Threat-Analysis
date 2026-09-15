@@ -127,32 +127,48 @@ body {
 .api-status-pill {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--bg-card-border);
-  border-radius: var(--radius-full);
-  font-size: 0.78rem;
-  color: var(--text-secondary);
+  border-radius: 50%;
+  cursor: default;
 }
 
 .status-dot {
-  width: 7px;
-  height: 7px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #94a3b8;
-  box-shadow: 0 0 8px #94a3b8;
+  background: #64748b;
+  box-shadow: 0 0 6px #64748b;
+  transition: all 0.3s ease;
 }
 
 .status-dot.online {
   background: var(--status-safe);
-  box-shadow: 0 0 10px var(--status-safe);
+  box-shadow: 0 0 10px var(--status-safe), 0 0 20px rgba(16, 185, 129, 0.5);
+  animation: pulse-green 2.5s infinite;
 }
 
 .status-dot.offline {
   background: var(--status-danger);
-  box-shadow: 0 0 10px var(--status-danger);
+  box-shadow: 0 0 10px var(--status-danger), 0 0 20px rgba(244, 63, 94, 0.5);
+  animation: pulse-red 2s infinite;
 }
+
+@keyframes pulse-green {
+  0% { transform: scale(0.95); box-shadow: 0 0 8px var(--status-safe); }
+  50% { transform: scale(1.15); box-shadow: 0 0 14px var(--status-safe), 0 0 24px rgba(16, 185, 129, 0.6); }
+  100% { transform: scale(0.95); box-shadow: 0 0 8px var(--status-safe); }
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(0.95); box-shadow: 0 0 8px var(--status-danger); }
+  50% { transform: scale(1.15); box-shadow: 0 0 14px var(--status-danger), 0 0 24px rgba(244, 63, 94, 0.6); }
+  100% { transform: scale(0.95); box-shadow: 0 0 8px var(--status-danger); }
+}
+
 
 .btn-icon {
   position: relative;

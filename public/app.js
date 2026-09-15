@@ -236,13 +236,15 @@ async function checkApiHealth() {
     const data = await res.json();
     if (data.status === 'healthy' || data.status === 'ok') {
       elements.statusDot.className = 'status-dot online';
-      elements.statusText.textContent = data.has_api_key ? 'SYSTEM STATUS: API ONLINE' : 'SYSTEM STATUS: CONFIG REQUIRED';
+      if (elements.statusText) elements.statusText.textContent = '';
+      if (elements.apiStatusPill) elements.apiStatusPill.title = 'Online';
     } else {
       throw new Error(data.message || 'Offline');
     }
   } catch (err) {
     elements.statusDot.className = 'status-dot offline';
-    elements.statusText.textContent = 'SYSTEM STATUS: API OFFLINE';
+    if (elements.statusText) elements.statusText.textContent = '';
+    if (elements.apiStatusPill) elements.apiStatusPill.title = 'Offline';
   }
 }
 
